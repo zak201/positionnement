@@ -2,10 +2,14 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const app = express();
 
 // Utiliser bodyParser pour les requêtes JSON
 app.use(bodyParser.json());
+
+// Ajouter CORS pour permettre au front-end de se connecter au back-end
+app.use(cors());
 
 // Base de données fictive pour stocker les tâches et utilisateurs
 let tasks = [];
