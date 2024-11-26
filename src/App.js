@@ -4,10 +4,10 @@ import Navigation from './components/Navigation';
 import TaskDashboard from './components/TaskDashboard';
 import TaskList from './components/TaskList';
 import CompletedTasks from './components/CompletedTasks';
-import './App.css';
+import './App.css'; // Import des styles
 
 function App() {
-    const [tasks, setTasks] = useState([]); // Démarre avec un tableau vide
+    const [tasks, setTasks] = useState([]); // Initialisation des tâches
 
     const toggleComplete = (id) => {
         setTasks(tasks.map(task =>
@@ -16,22 +16,22 @@ function App() {
     };
 
     const deleteTask = (id) => {
-        setTasks(tasks.filter(task => task.id !== id)); // Supprime une tâche définitivement
+        setTasks(tasks.filter(task => task.id !== id)); // Suppression d'une tâche
     };
 
     const addTask = (taskText) => {
         const newTask = {
-            id: Date.now(), // Utilise un timestamp comme ID unique
+            id: Date.now(), // Génère un ID unique
             task: taskText,
             completed: false,
         };
-        setTasks([...tasks, newTask]); // Ajoute une nouvelle tâche
+        setTasks([...tasks, newTask]); // Ajout d'une tâche
     };
 
     return (
         <Router>
-            <Navigation />
             <div className="app-container">
+                <Navigation /> {/* Barre de navigation */}
                 <Routes>
                     <Route
                         path="/"
