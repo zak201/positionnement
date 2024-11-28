@@ -8,7 +8,7 @@ function CompletedTasks({ tasks, deleteTask }) {
 
     return (
         <div>
-            <h2>Tâches terminées</h2>
+            <p>Tâches terminées</p>
             <ul>
                 {tasks.map(task => (
                     <li key={task._id}>

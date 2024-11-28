@@ -33,12 +33,13 @@ function TaskItem({ task, deleteTask, updateTask, toggleComplete }) {
                 <>
                     <span
                         onClick={handleToggleComplete} // Marquer la tâche comme terminée/non terminée
-                        style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
+                        style={{textDecoration: task.completed ? 'line-through' : 'none'}}
                     >
                         {task.title}
                     </span>
                     <button onClick={handleEdit}>Modifier</button>
                     <button onClick={() => deleteTask(task._id)}>Supprimer</button>
+                    <button onClick={handleToggleComplete}>Achever</button>
                 </>
             )}
         </div>
