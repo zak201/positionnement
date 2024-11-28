@@ -15,7 +15,8 @@ app.use(cors());
 // Connexion à la base de données MongoDB
 mongoose.connect('mongodb+srv://admin:admin@cluster1.rkcp1.mongodb.net/db', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000 // Timeout après 5s s'il y a un problème de connexion
 }).then(() => {
     console.log('Connexion à la base de données réussie');
 }).catch((error) => {
@@ -98,7 +99,7 @@ app.post('/login', (req, res) => {
 app.post('/tasks', authenticateJWT, async (req, res) => {
     const { title, description } = req.body;
     if (!title) {
-        return res.status(400).send('Le champ "title" est requis.');
+        return res.status(400).json({ message: 'Le champ "title" est requis.' });
     }
     try {
         console.log("Création d'une nouvelle tâche...");
@@ -108,10 +109,9 @@ app.post('/tasks', authenticateJWT, async (req, res) => {
         res.status(201).json(task);
     } catch (error) {
         console.error('Erreur lors de la création de la tâche:', error);
-        res.status(500).send('Erreur serveur');
+        res.status(500).json({ message: 'Erreur serveur lors de la création de la tâche.' });
     }
 });
-
 
 // Lire toutes les tâches
 app.get('/tasks', authenticateJWT, async (req, res) => {
@@ -121,7 +121,7 @@ app.get('/tasks', authenticateJWT, async (req, res) => {
         res.json(tasks);
     } catch (error) {
         console.error('Erreur lors de la lecture des tâches:', error);
-        res.status(500).send('Erreur serveur');
+        res.status(500).json({ message: 'Erreur serveur lors de la récupération des tâches.' });
     }
 });
 
@@ -129,24 +129,23 @@ app.get('/tasks', authenticateJWT, async (req, res) => {
 app.put('/tasks/:id', authenticateJWT, async (req, res) => {
     const { title, description, completed } = req.body;
     if (!title) {
-        return res.status(400).send('Le champ "title" est requis.');
+        return res.status(400).json({ message: 'Le champ "title" est requis.' });
     }
     try {
         console.log("Mise à jour de la tâche avec l'ID:", req.params.id);
-        const updatedTask = await Task.findByIdAndUpdate(req.params.id, { title, description, completed }, { new: true });
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, { title, description, completed, updated_at: Date.now() }, { new: true });
         if (updatedTask) {
             console.log('Tâche mise à jour avec succès:', updatedTask);
             res.json(updatedTask);
         } else {
             console.warn("Tâche non trouvée pour l'ID:", req.params.id);
-            res.status(404).send('Tâche non trouvée.');
+            res.status(404).json({ message: 'Tâche non trouvée.' });
         }
     } catch (error) {
         console.error('Erreur lors de la mise à jour de la tâche:', error);
-        res.status(500).send('Erreur serveur');
+        res.status(500).json({ message: 'Erreur serveur lors de la mise à jour de la tâche.' });
     }
 });
-
 
 // Supprimer une tâche (admin uniquement)
 app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, async (req, res) => {
@@ -158,23 +157,22 @@ app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, async (req, res) => {
             res.sendStatus(204);
         } else {
             console.warn("Tâche non trouvée pour l'ID:", req.params.id);
-            res.status(404).send('Tâche non trouvée.');
+            res.status(404).json({ message: 'Tâche non trouvée.' });
         }
     } catch (error) {
         console.error('Erreur lors de la suppression de la tâche:', error);
-        res.status(500).send('Erreur serveur');
+        res.status(500).json({ message: 'Erreur serveur lors de la suppression de la tâche.' });
     }
 });
-
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Serveur en écoute sur le port ${PORT}`);
 });
+
 // Middleware global pour la gestion des erreurs
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     console.error('Erreur générale:', err);
     res.status(500).send('Erreur serveur');
 });
-
