@@ -173,7 +173,7 @@ app.listen(PORT, () => {
     console.log(`Serveur en écoute sur le port ${PORT}`);
 });
 // Middleware global pour la gestion des erreurs
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     console.error('Erreur générale:', err);
     res.status(500).send('Erreur serveur');
 });
