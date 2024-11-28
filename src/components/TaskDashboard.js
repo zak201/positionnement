@@ -1,3 +1,4 @@
+// TaskDashboard.js
 import React, { useState, useEffect } from 'react';
 import TaskList from './TaskList';
 import TaskForm from './TaskForm';
@@ -41,14 +42,15 @@ function TaskDashboard({ onLogout }) {
     };
 
     // Mettre à jour une tâche
-    const updateTask = async (id, newText) => {
+    const updateTask = async (id, updatedData) => {
         try {
-            await apiUpdateTask(id, { title: newText });
+            await apiUpdateTask(id, updatedData);
             fetchTasks(); // Met à jour la liste des tâches après la modification
         } catch (error) {
             console.error('Erreur lors de la mise à jour de la tâche:', error);
         }
     };
+
     // Bascule l'état de complétion d'une tâche
     const toggleComplete = async (id, completed) => {
         try {
@@ -72,7 +74,7 @@ function TaskDashboard({ onLogout }) {
                 tasks={tasks}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
-                toggleComplete={toggleComplete}
+                toggleComplete={toggleComplete} // Passer toggleComplete à TaskList
             />
         </div>
     );
