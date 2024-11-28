@@ -31,19 +31,21 @@ function TaskItem({ task, deleteTask, updateTask, toggleComplete }) {
                 </>
             ) : (
                 <>
-                    <span
-                        onClick={handleToggleComplete} // Marquer la tâche comme terminée/non terminée
-                        style={{textDecoration: task.completed ? 'line-through' : 'none'}}
-                    >
+                <span
+                    onClick={handleToggleComplete} // Marquer la tâche comme terminée/non terminée
+                    style={{textDecoration: task.completed ? 'line-through' : 'none'}}
+                >
                         {task.title}
                     </span>
-                    <button onClick={handleEdit}>Modifier</button>
-                    <button onClick={() => deleteTask(task._id)}>Supprimer</button>
-                    <button onClick={handleToggleComplete}>Achever</button>
+                <div className="button-container">
+                    <button className="edit-btn" onClick={handleEdit}>Modifier</button>
+                    <button className="delete-btn" onClick={() => deleteTask(task._id)}>Supprimer</button>
+                    <button className="complete-btn" onClick={handleToggleComplete}>Achever</button>
+                </div>
                 </>
-            )}
-        </div>
-    );
-}
+                )}
+                </div>
+            );
+            }
 
-export default TaskItem;
+            export default TaskItem;

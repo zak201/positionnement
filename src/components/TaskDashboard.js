@@ -1,10 +1,9 @@
-// TaskDashboard.js
 import React, { useState, useEffect } from 'react';
 import TaskList from './TaskList';
 import TaskForm from './TaskForm';
 import { getTasks, addTask as apiAddTask, deleteTask as apiDeleteTask, updateTask as apiUpdateTask } from '../services/api';
 
-function TaskDashboard({ onLogout }) {
+function TaskDashboard() {
     const [tasks, setTasks] = useState([]);
 
     // Fonction pour récupérer les tâches
@@ -24,7 +23,9 @@ function TaskDashboard({ onLogout }) {
     // Ajouter une tâche
     const addTask = async (taskText) => {
         try {
-            await apiAddTask({ title: taskText, description: '' });
+            console.log("Tentative d'ajout de la tâche...");
+            const response = await apiAddTask({ title: taskText, description: '' });
+            console.log("Tâche ajoutée avec succès :", response);
             fetchTasks(); // Met à jour la liste des tâches après l'ajout
         } catch (error) {
             console.error('Erreur lors de l\'ajout de la tâche:', error);
@@ -42,15 +43,14 @@ function TaskDashboard({ onLogout }) {
     };
 
     // Mettre à jour une tâche
-    const updateTask = async (id, updatedData) => {
+    const updateTask = async (id, newText) => {
         try {
-            await apiUpdateTask(id, updatedData);
+            await apiUpdateTask(id, { title: newText });
             fetchTasks(); // Met à jour la liste des tâches après la modification
         } catch (error) {
             console.error('Erreur lors de la mise à jour de la tâche:', error);
         }
     };
-
     // Bascule l'état de complétion d'une tâche
     const toggleComplete = async (id, completed) => {
         try {
@@ -63,10 +63,6 @@ function TaskDashboard({ onLogout }) {
 
     return (
         <div>
-            <button onClick={() => {
-                localStorage.removeItem('token');
-                onLogout();
-            }}>Déconnexion</button>
             <h1>Ajouter une tâche</h1>
             <TaskForm addTask={addTask} />
             <h2>Liste des tâches</h2>
@@ -74,7 +70,7 @@ function TaskDashboard({ onLogout }) {
                 tasks={tasks}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
-                toggleComplete={toggleComplete} // Passer toggleComplete à TaskList
+                toggleComplete={toggleComplete}
             />
         </div>
     );

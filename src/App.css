@@ -184,8 +184,8 @@ nav ul li a:hover {
 /* Conteneur des boutons */
 .task-buttons {
   display: flex; /* Aligne les boutons horizontalement */
-  gap: 10px; /* Espacement entre les boutons */
-}
+  gap: 10px; /* Espacement entre les boutons */}
+
 
 /* Boutons */
 .task-item button {
@@ -193,6 +193,7 @@ nav ul li a:hover {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px; /* Ajout pour une taille de texte cohérente */
 }
 
 .task-item button.edit-btn {
@@ -212,8 +213,22 @@ nav ul li a:hover {
 .task-item button.delete-btn:hover {
   background-color: #a71d2a;
 }
-.button-container {
-  display: flex;        /* Utilise Flexbox pour le conteneur */
-  justify-content: space-between; /* Espacement entre les boutons, ou 'center' pour centrer */
-  align-items: center;  /* Alignement vertical des boutons si leur hauteur est différente */
+
+.task-item button.complete-btn {
+  background-color: #28a745;
+  color: white;
 }
+
+.task-item button.complete-btn:hover {
+  background-color: #1e7e34;
+}
+
+/* Conteneur des boutons */
+.button-container {
+  display: flex;       /* Alignement des boutons sur une ligne */
+  gap: 10px;           /* Espacement entre les boutons */
+  justify-content: flex-start; /* Aligne les boutons à gauche */
+  align-items: center; /* Centre verticalement les boutons */
+}
+
+
