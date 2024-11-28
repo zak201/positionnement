@@ -2,7 +2,7 @@
 import React from 'react';
 import TaskItem from './TaskItem';
 
-function TaskList({ tasks, deleteTask, updateTask }) {
+function TaskList({ tasks = [], deleteTask, updateTask, toggleComplete }) {
     return (
         <div className="task-grid">
             {tasks.length === 0 ? (
@@ -14,6 +14,7 @@ function TaskList({ tasks, deleteTask, updateTask }) {
                         task={task}
                         deleteTask={deleteTask}
                         updateTask={updateTask}
+                        toggleComplete={toggleComplete}
                     />
                 ))
             )}

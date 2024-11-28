@@ -1,7 +1,7 @@
 // TaskItem.js
 import React, { useState } from 'react';
 
-function TaskItem({ task, deleteTask, updateTask }) {
+function TaskItem({ task, deleteTask, updateTask, toggleComplete }) {
     const [isEditing, setIsEditing] = useState(false);
     const [newText, setNewText] = useState(task.title);
 
@@ -10,12 +10,12 @@ function TaskItem({ task, deleteTask, updateTask }) {
     };
 
     const handleSave = () => {
-        updateTask(task._id, { title: newText, completed: task.completed });
+        updateTask(task._id, newText);
         setIsEditing(false);
     };
 
     const handleToggleComplete = () => {
-        updateTask(task._id, { title: task.title, completed: !task.completed });
+        toggleComplete(task._id, !task.completed); // Appeler toggleComplete avec l'état opposé de la tâche
     };
 
     return (
@@ -32,7 +32,7 @@ function TaskItem({ task, deleteTask, updateTask }) {
             ) : (
                 <>
                     <span
-                        onClick={handleToggleComplete}
+                        onClick={handleToggleComplete} // Marquer la tâche comme terminée/non terminée
                         style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
                     >
                         {task.title}

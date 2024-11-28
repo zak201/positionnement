@@ -49,6 +49,15 @@ function TaskDashboard({ onLogout }) {
             console.error('Erreur lors de la mise à jour de la tâche:', error);
         }
     };
+    // Bascule l'état de complétion d'une tâche
+    const toggleComplete = async (id, completed) => {
+        try {
+            await apiUpdateTask(id, { completed });
+            fetchTasks(); // Met à jour la liste des tâches après la modification
+        } catch (error) {
+            console.error("Erreur lors du changement de l'état de complétion de la tâche:", error);
+        }
+    };
 
     return (
         <div>
@@ -63,6 +72,7 @@ function TaskDashboard({ onLogout }) {
                 tasks={tasks}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
+                toggleComplete={toggleComplete}
             />
         </div>
     );
