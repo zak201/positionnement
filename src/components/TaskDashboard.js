@@ -1,13 +1,16 @@
-// TaskDashboard.js
 import React, { useState, useEffect } from 'react';
 import TaskList from './TaskList';
 import TaskForm from './TaskForm';
 import { getTasks, addTask as apiAddTask, deleteTask as apiDeleteTask, updateTask as apiUpdateTask } from '../services/api';
 
-function TaskDashboard() {
+function TaskDashboard({ onLogout }) {
     const [tasks, setTasks] = useState([]);
 
     // Fonction pour récupérer les tâches
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
     const fetchTasks = async () => {
         try {
             const tasksData = await getTasks();
@@ -16,11 +19,6 @@ function TaskDashboard() {
             console.error('Erreur lors de la récupération des tâches:', error);
         }
     };
-
-    // Récupérer les tâches au chargement du composant
-    useEffect(() => {
-        fetchTasks();
-    }, []);
 
     // Ajouter une tâche
     const addTask = async (taskText) => {
@@ -31,7 +29,6 @@ function TaskDashboard() {
             console.error('Erreur lors de l\'ajout de la tâche:', error);
         }
     };
-
 
     // Supprimer une tâche
     const deleteTask = async (id) => {
@@ -53,9 +50,12 @@ function TaskDashboard() {
         }
     };
 
-
     return (
         <div>
+            <button onClick={() => {
+                localStorage.removeItem('token');
+                onLogout();
+            }}>Déconnexion</button>
             <h1>Ajouter une tâche</h1>
             <TaskForm addTask={addTask} />
             <h2>Liste des tâches</h2>

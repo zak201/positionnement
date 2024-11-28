@@ -1,10 +1,15 @@
-// api.js
 import axios from 'axios';
 
 // URL du back-end déployé sur Render
 const apiBaseUrl = 'https://positionnement.onrender.com';
 
-// Fonction pour obtenir le token à partir du localStorage (ou toute autre méthode de stockage)
+// Fonction de login
+export const login = async (username, password) => {
+    const response = await axios.post(`${apiBaseUrl}/login`, { username, password });
+    return response.data;
+};
+
+// Fonction pour obtenir le token à partir du localStorage
 const getToken = () => {
     return localStorage.getItem('token');
 };
@@ -21,13 +26,10 @@ apiClient.interceptors.request.use((config) => {
     const token = getToken();
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
-    } else{
-        console.warn('Aucun Token Trouvé');
-        return Promise.reject(new Error(`Auncun Token trouvé`));
     }
     return config;
 }, (error) => {
-    return Promise.reject(error); // Pour gérer les erreurs qui pourraient se produire pendant la configuration de la requete
+    return Promise.reject(error); // Pour gérer les erreurs qui pourraient se produire pendant la configuration de la requête
 });
 
 // Obtenir toutes les tâches
