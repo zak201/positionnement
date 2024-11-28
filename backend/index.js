@@ -14,6 +14,8 @@ app.use(cors());
 
 // Connexion à la base de données MongoDB
 mongoose.connect('mongodb+srv://admin:admin@cluster1.rkcp1.mongodb.net/db', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }).then(() => {
     console.log('Connexion à la base de données réussie');
 }).catch((error) => {
@@ -22,11 +24,16 @@ mongoose.connect('mongodb+srv://admin:admin@cluster1.rkcp1.mongodb.net/db', {
 
 // Définir le schéma et le modèle de la tâche
 const taskSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    completed: { type: Boolean, default: false }
+    title: { type: String, required: true },
+    description: { type: String, required: false },
+    completed: { type: Boolean, default: false },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
-
+taskSchema.pre('save', function(next) {
+    this.updated_at = Date.now();
+    next();
+});
 const Task = mongoose.model('Task', taskSchema);
 
 // Base de données fictive pour stocker les utilisateurs
@@ -89,9 +96,13 @@ app.post('/login', (req, res) => {
 
 // Créer une nouvelle tâche
 app.post('/tasks', authenticateJWT, async (req, res) => {
+    const { title, description } = req.body;
+    if (!title) {
+        return res.status(400).send('Le champ "title" est requis.');
+    }
     try {
         console.log("Création d'une nouvelle tâche...");
-        const task = new Task(req.body);
+        const task = new Task({ title, description });
         await task.save();
         console.log('Tâche créée avec succès:', task);
         res.status(201).json(task);
@@ -100,6 +111,7 @@ app.post('/tasks', authenticateJWT, async (req, res) => {
         res.status(500).send('Erreur serveur');
     }
 });
+
 
 // Lire toutes les tâches
 app.get('/tasks', authenticateJWT, async (req, res) => {
@@ -115,9 +127,13 @@ app.get('/tasks', authenticateJWT, async (req, res) => {
 
 // Mettre à jour une tâche
 app.put('/tasks/:id', authenticateJWT, async (req, res) => {
+    const { title, description, completed } = req.body;
+    if (!title) {
+        return res.status(400).send('Le champ "title" est requis.');
+    }
     try {
         console.log("Mise à jour de la tâche avec l'ID:", req.params.id);
-        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, { title, description, completed }, { new: true });
         if (updatedTask) {
             console.log('Tâche mise à jour avec succès:', updatedTask);
             res.json(updatedTask);
@@ -130,6 +146,7 @@ app.put('/tasks/:id', authenticateJWT, async (req, res) => {
         res.status(500).send('Erreur serveur');
     }
 });
+
 
 // Supprimer une tâche (admin uniquement)
 app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, async (req, res) => {
@@ -149,8 +166,15 @@ app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, async (req, res) => {
     }
 });
 
+
 // Démarrer le serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Serveur en écoute sur le port ${PORT}`);
 });
+// Middleware global pour la gestion des erreurs
+app.use((err, req, res, next) => {
+    console.error('Erreur générale:', err);
+    res.status(500).send('Erreur serveur');
+});
+
