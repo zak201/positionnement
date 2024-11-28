@@ -14,8 +14,6 @@ app.use(cors());
 
 // Connexion à la base de données MongoDB
 mongoose.connect('mongodb+srv://admin:admin@cluster1.rkcp1.mongodb.net/db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
 }).then(() => {
     console.log('Connexion à la base de données réussie');
 }).catch((error) => {
