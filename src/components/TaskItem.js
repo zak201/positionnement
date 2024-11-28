@@ -10,8 +10,12 @@ function TaskItem({ task, deleteTask, updateTask }) {
     };
 
     const handleSave = () => {
-        updateTask(task._id, newText);
+        updateTask(task._id, { title: newText, completed: task.completed });
         setIsEditing(false);
+    };
+
+    const handleToggleComplete = () => {
+        updateTask(task._id, { title: task.title, completed: !task.completed });
     };
 
     return (
@@ -27,7 +31,12 @@ function TaskItem({ task, deleteTask, updateTask }) {
                 </>
             ) : (
                 <>
-                    <span>{task.title}</span>
+                    <span
+                        onClick={handleToggleComplete}
+                        style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
+                    >
+                        {task.title}
+                    </span>
                     <button onClick={handleEdit}>Modifier</button>
                     <button onClick={() => deleteTask(task._id)}>Supprimer</button>
                 </>
