@@ -8,10 +8,8 @@ function Navigation({ onLogout }) {
                 <li><Link to="/">Tableau de bord</Link></li>
                 <li><Link to="/tasks">Tâches</Link></li>
                 <li><Link to="/completed-tasks">Tâches achevées</Link></li>
-                <button onClick={() => {
-                    localStorage.removeItem('token');
-                    onLogout();
-                }}>Déconnexion
+                <button onClick={onLogout}>
+                Déconnexion
                 </button>
             </ul>
         </nav>

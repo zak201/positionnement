@@ -8,7 +8,13 @@ import './App.css'; // Import des styles
 
 function App() {
     const [tasks, setTasks] = useState([]); // Initialisation des tâches
+    const [ setIsAuthenticated] = useState(localStorage.getItem('token') !== null);
 
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+    };
     const toggleComplete = (id) => {
         setTasks(tasks.map(task =>
             task.id === id ? { ...task, completed: !task.completed } : task
@@ -31,7 +37,7 @@ function App() {
     return (
         <Router>
             <div className="app-container">
-                <Navigation /> {/* Barre de navigation */}
+                <Navigation onLogout={handleLogout}/> {/* Barre de navigation */}
                 <Routes>
                     <Route
                         path="/"
