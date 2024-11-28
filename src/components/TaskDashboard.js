@@ -25,12 +25,13 @@ function TaskDashboard() {
     // Ajouter une tâche
     const addTask = async (taskText) => {
         try {
-            const newTask = await apiAddTask({ title: taskText, description: '', completed: false });
-            fetchTasks(); // Met à jour la liste des tâches
+            await apiAddTask({ title: taskText, description: '' });
+            fetchTasks(); // Met à jour la liste des tâches après l'ajout
         } catch (error) {
             console.error('Erreur lors de l\'ajout de la tâche:', error);
         }
     };
+
 
     // Supprimer une tâche
     const deleteTask = async (id) => {
@@ -45,12 +46,13 @@ function TaskDashboard() {
     // Mettre à jour une tâche
     const updateTask = async (id, newText) => {
         try {
-            const updatedTask = await apiUpdateTask(id, { title: newText });
-            fetchTasks(); // Met à jour la liste des tâches
+            await apiUpdateTask(id, { title: newText });
+            fetchTasks(); // Met à jour la liste des tâches après la modification
         } catch (error) {
             console.error('Erreur lors de la mise à jour de la tâche:', error);
         }
     };
+
 
     return (
         <div>
