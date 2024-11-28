@@ -1,22 +1,23 @@
+// TaskForm.js
 import React, { useState } from 'react';
 
 function TaskForm({ addTask }) {
-    const [task, setTask] = useState('');
+    const [taskText, setTaskText] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (task.trim()) {
-            addTask(task); // Appelle la fonction pour ajouter une tâche
-            setTask(''); // Réinitialise le champ d'entrée
+        if (taskText.trim()) {
+            addTask(taskText);
+            setTaskText('');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="task-form">
+        <form onSubmit={handleSubmit}>
             <input
                 type="text"
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
+                value={taskText}
+                onChange={(e) => setTaskText(e.target.value)}
                 placeholder="Ajouter une nouvelle tâche"
             />
             <button type="submit">Add</button>
