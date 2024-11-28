@@ -21,8 +21,13 @@ apiClient.interceptors.request.use((config) => {
     const token = getToken();
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
+    } else{
+        console.warn('Aucun Token Trouvé');
+        return Promise.reject(new Error(`Auncun Token trouvé`));
     }
     return config;
+}, (error) => {
+    return Promise.reject(error); // Pour gérer les erreurs qui pourraient se produire pendant la configuration de la requete
 });
 
 // Obtenir toutes les tâches
