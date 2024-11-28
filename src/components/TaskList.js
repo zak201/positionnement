@@ -1,7 +1,7 @@
 import React from 'react';
 import TaskItem from './TaskItem';
 
-function TaskList({ tasks, toggleComplete, deleteTask, updateTask }) {
+function TaskList({ tasks, deleteTask, updateTask }) {
     return (
         <div className="task-grid">
             {tasks.length === 0 ? (
@@ -9,9 +9,8 @@ function TaskList({ tasks, toggleComplete, deleteTask, updateTask }) {
             ) : (
                 tasks.map(task => (
                     <TaskItem
-                        key={task.id}
+                        key={task._id}
                         task={task}
-                        toggleComplete={toggleComplete}
                         deleteTask={deleteTask}
                         updateTask={updateTask}
                     />
