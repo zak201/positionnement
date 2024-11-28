@@ -3,6 +3,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
 
 // Utiliser bodyParser pour les requêtes JSON
@@ -11,8 +12,26 @@ app.use(bodyParser.json());
 // Ajouter CORS pour permettre au front-end de se connecter au back-end
 app.use(cors());
 
-// Base de données fictive pour stocker les tâches et utilisateurs
-let tasks = [];
+// Connexion à la base de données MongoDB
+mongoose.connect('mongodb+srv://admin:admin@cluster1.rkcp1.mongodb.net/db', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log('Connexion à la base de données réussie');
+}).catch((error) => {
+    console.error('Erreur lors de la connexion à la base de données:', error);
+});
+
+// Définir le schéma et le modèle de la tâche
+const taskSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    completed: { type: Boolean, default: false }
+});
+
+const Task = mongoose.model('Task', taskSchema);
+
+// Base de données fictive pour stocker les utilisateurs
 let users = [
     { id: 1, username: 'admin', password: 'admin123', role: 'admin' },
     { id: 2, username: 'user', password: 'user123', role: 'user' }
@@ -49,7 +68,7 @@ const authorizeAdmin = (req, res, next) => {
         console.warn('Accès refusé : utilisateur sans privilèges administrateur:', req.user.username);
         return res.status(403).send("Accès refusé : Vous n'êtes pas autorisé à effectuer cette action.");
     }
-    console.log("Privilèges administrateur confirmés pour l'utilisateur:', req.user.username");
+    console.log("Privilèges administrateur confirmés pour l'utilisateur:", req.user.username);
     next();
 };
 
@@ -71,48 +90,64 @@ app.post('/login', (req, res) => {
 // Routes CRUD pour les tâches
 
 // Créer une nouvelle tâche
-app.post('/tasks', authenticateJWT, (req, res) => {
-    console.log("Création d'une nouvelle tâche...");
-    const task = req.body;
-    task.id = tasks.length + 1;
-    tasks.push(task);
-    console.log('Tâche créée avec succès:', task);
-    res.status(201).json(task);
+app.post('/tasks', authenticateJWT, async (req, res) => {
+    try {
+        console.log("Création d'une nouvelle tâche...");
+        const task = new Task(req.body);
+        await task.save();
+        console.log('Tâche créée avec succès:', task);
+        res.status(201).json(task);
+    } catch (error) {
+        console.error('Erreur lors de la création de la tâche:', error);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 // Lire toutes les tâches
-app.get('/tasks', authenticateJWT, (req, res) => {
-    console.log('Lecture de toutes les tâches...');
-    res.json(tasks);
+app.get('/tasks', authenticateJWT, async (req, res) => {
+    try {
+        console.log('Lecture de toutes les tâches...');
+        const tasks = await Task.find();
+        res.json(tasks);
+    } catch (error) {
+        console.error('Erreur lors de la lecture des tâches:', error);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 // Mettre à jour une tâche
-app.put('/tasks/:id', authenticateJWT, (req, res) => {
-    console.log("Mise à jour de la tâche avec l'ID:", req.params.id);
-    const taskId = parseInt(req.params.id);
-    const taskIndex = tasks.findIndex(task => task.id === taskId);
-    if (taskIndex !== -1) {
-        tasks[taskIndex] = { ...tasks[taskIndex], ...req.body };
-        console.log('Tâche mise à jour avec succès:', tasks[taskIndex]);
-        res.json(tasks[taskIndex]);
-    } else {
-        console.warn("Tâche non trouvée pour l'ID:", taskId);
-        res.status(404).send('Tâche non trouvée.');
+app.put('/tasks/:id', authenticateJWT, async (req, res) => {
+    try {
+        console.log("Mise à jour de la tâche avec l'ID:", req.params.id);
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (updatedTask) {
+            console.log('Tâche mise à jour avec succès:', updatedTask);
+            res.json(updatedTask);
+        } else {
+            console.warn("Tâche non trouvée pour l'ID:", req.params.id);
+            res.status(404).send('Tâche non trouvée.');
+        }
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de la tâche:', error);
+        res.status(500).send('Erreur serveur');
     }
 });
 
 // Supprimer une tâche (admin uniquement)
-app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, (req, res) => {
-    console.log("Suppression de la tâche avec l'ID:", req.params.id);
-    const taskId = parseInt(req.params.id);
-    const taskIndex = tasks.findIndex(task => task.id === taskId);
-    if (taskIndex !== -1) {
-        tasks.splice(taskIndex, 1);
-        console.log('Tâche supprimée avec succès.');
-        res.sendStatus(204);
-    } else {
-        console.warn("Tâche non trouvée pour l'ID:", taskId);
-        res.status(404).send('Tâche non trouvée.');
+app.delete('/tasks/:id', authenticateJWT, authorizeAdmin, async (req, res) => {
+    try {
+        console.log("Suppression de la tâche avec l'ID:", req.params.id);
+        const deletedTask = await Task.findByIdAndDelete(req.params.id);
+        if (deletedTask) {
+            console.log('Tâche supprimée avec succès.');
+            res.sendStatus(204);
+        } else {
+            console.warn("Tâche non trouvée pour l'ID:", req.params.id);
+            res.status(404).send('Tâche non trouvée.');
+        }
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la tâche:', error);
+        res.status(500).send('Erreur serveur');
     }
 });
 
