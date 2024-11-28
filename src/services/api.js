@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // URL du back-end déployé sur Render
-const apiBaseUrl = 'https://positionnementynov.onrender.com';
+const apiBaseUrl = 'https://positionnement.onrender.com';
 
 // Fonction pour obtenir le token à partir du localStorage (ou toute autre méthode de stockage)
 const getToken = () => {
